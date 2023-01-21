@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Build Garbage
+.vs/*
+Debug/*
+Release/*
+*.zip
