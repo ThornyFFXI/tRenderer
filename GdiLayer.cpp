@@ -42,6 +42,7 @@ GdiLayer::~GdiLayer()
     SAFE_RELEASE(this->m_Sprite);
     delete this->m_Graphics;
     delete this->m_Bitmap;
+    free(m_RawImage);
 }
 
 void GdiLayer::Clear()
@@ -74,7 +75,7 @@ bool GdiLayer::Render(int offsetX, int offsetY)
     // Create or update texture..
     if (m_Texture == nullptr)
     {
-        if (FAILED(::D3DXCreateTexture(m_Device, m_Width, m_Height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &m_Texture)))
+        if (FAILED(::D3DXCreateTexture(m_Device, m_Width, m_Height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &m_Texture)))
         {
             g_AshitaCore->GetChatManager()->Writef(0, false, "%s%s",
                 Ashita::Chat::Header("tRenderer").c_str(),
@@ -91,7 +92,6 @@ bool GdiLayer::Render(int offsetX, int offsetY)
             return false;
         }
         
-        // Initial texture creation is coming out upside down and I don't really care if it has to do an extra lock once on initialization..
         this->m_Dirty = true;
     }
     
