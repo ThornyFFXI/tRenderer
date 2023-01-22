@@ -11,6 +11,9 @@
 #include <map>
 #pragma comment(lib, "C:/Ashita 4/plugins/sdk/d3d8/lib/d3dx8.lib")
 
+
+extern IAshitaCore* g_AshitaCore;
+
 #define SAFE_DELETE(p) \
     if (p)             \
     {                  \

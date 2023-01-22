@@ -105,18 +105,20 @@ void AbilitySquareManager::Initialize()
     }
 }
 
-void AbilitySquareManager::Render()
+bool AbilitySquareManager::Render()
 {
     if ((m_State == nullptr) || (m_State->Render == 0))
-        return;
+    {
+        return true;
+    }
+    m_State->Render = 0;
 
     for (auto iter = m_Squares.begin(); iter != m_Squares.end(); iter++)
     {
         (*iter)->Render();
     }
 
-    m_Layer->Render(m_State->PositionX, m_State->PositionY);
-    m_State->Render = 0;
+    return m_Layer->Render(m_State->PositionX, m_State->PositionY);
 }
 
 void AbilitySquareManager::Update()

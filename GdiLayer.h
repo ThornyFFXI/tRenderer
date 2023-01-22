@@ -38,11 +38,7 @@ public:
     void Clear();
     void ClearRegion(Gdiplus::Rect region);
     Gdiplus::Graphics* GetGraphics();
-    void Render(int offsetX, int offsetY);
+    bool Render(int offsetX, int offsetY);
     void SetDirty(bool dirty);
-    Gdiplus::Bitmap* GetBitmap()
-    {
-        return m_Bitmap;
-    };
 };
 #endif

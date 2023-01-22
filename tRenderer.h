@@ -18,6 +18,7 @@ private:
     ULONG_PTR m_GDIToken;
     GdiLayer* m_GdiLayer;
     ImageCache* m_Cache;
+    bool m_Unloading;
     std::map<std::string, AbilitySquareManager*> m_Managers;
 
 public:
@@ -39,7 +40,7 @@ public:
     }
     double GetVersion(void) const override
     {
-        return 1.00f;
+        return 1.01f;
     }
     int32_t GetPriority(void) const override
     {

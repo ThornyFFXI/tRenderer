@@ -1,5 +1,7 @@
 #include "tRenderer.h"
 
+IAshitaCore* g_AshitaCore = nullptr;
+
 __declspec(dllexport) IPlugin* __stdcall expCreatePlugin(const char* args)
 {
     UNREFERENCED_PARAMETER(args);
@@ -18,8 +20,10 @@ bool tRenderer::Initialize(IAshitaCore* core, ILogManager* logger, const uint32_
     m_LogManager = logger;
     m_PluginId   = id;
     m_Cache      = new ImageCache(core);
+    m_Unloading  = false;
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     Gdiplus::GdiplusStartup(&m_GDIToken, &gdiplusStartupInput, NULL);
+    g_AshitaCore = core;
 
     return true;
 }
@@ -83,6 +87,9 @@ void tRenderer::Direct3DPresent(const RECT* pSourceRect, const RECT* pDestRect, 
 	UNREFERENCED_PARAMETER(hDestWindowOverride);
     UNREFERENCED_PARAMETER(pDirtyRegion);
 
+    if (m_Unloading)
+        return;
+
     for (auto iter = m_Managers.begin(); iter != m_Managers.end(); iter++)
     {
         iter->second->Update();
@@ -90,6 +97,11 @@ void tRenderer::Direct3DPresent(const RECT* pSourceRect, const RECT* pDestRect, 
 
     for (auto iter = m_Managers.begin(); iter != m_Managers.end(); iter++)
     {
-        iter->second->Render();
+        if (!iter->second->Render())
+        {
+            m_Unloading = true;
+            g_AshitaCore->GetChatManager()->QueueCommand(-1, "/unload tRenderer");
+            return;
+        }
     }
 }

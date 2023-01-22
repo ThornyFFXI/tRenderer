@@ -35,7 +35,7 @@ public:
     void ReleaseObjects();
     void* GetPointer(EventInitializer_t initializer);
     void Initialize();
-    void Render();
+    bool Render();
     void Update();
 };
 #endif

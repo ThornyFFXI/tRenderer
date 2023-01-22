@@ -69,22 +69,26 @@ Gdiplus::Graphics* GdiLayer::GetGraphics()
     return m_Graphics;
 }
 
-void GdiLayer::Render(int offsetX, int offsetY)
+bool GdiLayer::Render(int offsetX, int offsetY)
 {
     // Create or update texture..
     if (m_Texture == nullptr)
     {
-        if (FAILED(::D3DXCreateTextureFromFileInMemoryEx(this->m_Device, m_RawImage, m_Size + 108,
-                D3DX_DEFAULT, D3DX_DEFAULT, 1, D3DUSAGE_DYNAMIC, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_FILTER_NONE, D3DX_FILTER_NONE, 0xFF00000,
-                &this->m_ImageInfo, nullptr, &this->m_Texture)))
+        if (FAILED(::D3DXCreateTexture(m_Device, m_Width, m_Height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &m_Texture)))
         {
-            return;
+            g_AshitaCore->GetChatManager()->Writef(0, false, "%s%s",
+                Ashita::Chat::Header("tRenderer").c_str(),
+                Ashita::Chat::Error("Failed to create texture.").c_str());
+            return false;
         }
 
         if (FAILED(m_Texture->GetLevelDesc(0, &this->m_SurfaceDesc)))
         {
+            g_AshitaCore->GetChatManager()->Writef(0, false, "%s%s",
+                Ashita::Chat::Header("tRenderer").c_str(),
+                Ashita::Chat::Error("Failed to get texture surface description.").c_str());
             SAFE_RELEASE(m_Texture);
-            return;
+            return false;
         }
         
         // Initial texture creation is coming out upside down and I don't really care if it has to do an extra lock once on initialization..
@@ -106,7 +110,12 @@ void GdiLayer::Render(int offsetX, int offsetY)
     if (m_Sprite == nullptr)
     {
         if (FAILED(::D3DXCreateSprite(this->m_Device, &this->m_Sprite)))
-            return;
+        {
+            g_AshitaCore->GetChatManager()->Writef(0, false, "%s%s",
+                Ashita::Chat::Header("tRenderer").c_str(),
+                Ashita::Chat::Error("Failed to create sprite.").c_str());
+            return false;
+        }
     }
 
     // Draw rect..
@@ -115,7 +124,12 @@ void GdiLayer::Render(int offsetX, int offsetY)
     // Save the current state block..
     DWORD stateBlock = 0;
     if (FAILED(this->m_Device->CreateStateBlock(D3DSBT_ALL, &stateBlock)))
-        return;
+    {
+        g_AshitaCore->GetChatManager()->Writef(0, false, "%s%s",
+            Ashita::Chat::Header("tRenderer").c_str(),
+            Ashita::Chat::Error("Failed to create state block.").c_str());
+        return false;
+    }
 
     // Render sprite..
     this->m_Sprite->Begin();
@@ -128,7 +142,7 @@ void GdiLayer::Render(int offsetX, int offsetY)
     // Restore state block..
     this->m_Device->ApplyStateBlock(stateBlock);
     this->m_Device->DeleteStateBlock(stateBlock);
-    return;
+    return true;
 }
 
 void GdiLayer::SetDirty(bool dirty)
