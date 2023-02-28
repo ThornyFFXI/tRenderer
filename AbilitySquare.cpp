@@ -4,7 +4,7 @@ AbilitySquare::AbilitySquare(AbilitySquareConfiguration_t config, AbilitySquareS
     : m_Cache(pCache)
     , m_Config(config)
     , m_CostPath(nullptr)
-    , m_Dirty(false)
+    , m_Dirty(true)
     , m_IconImage(nullptr)
     , m_Layer(pLayer)
     , m_MacroPath(nullptr)

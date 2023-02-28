@@ -47,6 +47,11 @@ void AbilitySquareManager::ReleaseObjects()
     SAFE_DELETE(m_State);
 }
 
+EventInitializer_t AbilitySquareManager::GetInitializer()
+{
+    return m_Initializer;
+}
+
 void* AbilitySquareManager::GetPointer(EventInitializer_t initializer)
 {
     if (memcmp(&initializer, &this->m_Initializer, sizeof(EventInitializer_t)) == 0)

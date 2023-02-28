@@ -33,6 +33,7 @@ public:
     AbilitySquareManager(EventInitializer_t initializer, ImageCache* pCache, IDirect3DDevice8* pDevice);
     ~AbilitySquareManager();
     void ReleaseObjects();
+    EventInitializer_t GetInitializer();
     void* GetPointer(EventInitializer_t initializer);
     void Initialize();
     bool Render();

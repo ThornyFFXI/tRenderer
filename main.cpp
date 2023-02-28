@@ -49,14 +49,25 @@ void tRenderer::HandleEvent(const char* eventName, const void* eventData, const 
         EventInitializer_t event = *((EventInitializer_t*)eventData);
         std::string matchString(event.UniqueIdentifier);
         auto iter = m_Managers.find(matchString);
+        if (iter != m_Managers.end())
+        {
+            auto comp = iter->second->GetInitializer();
+            if (memcmp(&event, &comp, sizeof(EventInitializer_t)) != 0)
+            {
+                delete iter->second;
+                m_Managers.erase(iter);
+                iter = m_Managers.end();
+            }
+        }
+
         if (iter == m_Managers.end())
         {
             AbilitySquareManager* newManager = new AbilitySquareManager(event, m_Cache, m_Direct3DDevice);
             m_Managers[matchString]          = newManager;
             iter                             = m_Managers.find(matchString);
         }
-        auto ptr = iter->second->GetPointer(event);
 
+        auto ptr = iter->second->GetPointer(event);
         char responseEventName[512];
         sprintf_s(responseEventName, 512, "tRenderer_Accessor_%s", event.UniqueIdentifier);
         m_AshitaCore->GetPluginManager()->RaiseEvent(responseEventName, &ptr, 4);
